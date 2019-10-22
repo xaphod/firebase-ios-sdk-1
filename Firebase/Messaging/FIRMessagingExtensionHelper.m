@@ -16,11 +16,35 @@
 
 #import <FirebaseMessaging/FIRMessagingExtensionHelper.h>
 
+#import <GoogleDataTransport/GoogleDataTransport.h>
+
 #import "Firebase/Messaging/FIRMMessageCode.h"
 #import "Firebase/Messaging/FIRMessagingLogger.h"
 
 static NSString *const kPayloadOptionsName = @"fcm_options";
 static NSString *const kPayloadOptionsImageURLName = @"image";
+
+@interface FIRMessagingLogMessage : NSObject {
+    NSString *_message;
+}
+@end
+
+@interface FIRMessagingLogMessage (GDTEventDataObject) <GDTCOREventDataObject>
+@end
+
+@implementation FIRMessagingLogMessage
+
+- (NSData *)transportBytes {
+  // The implementation of transportBytes can be as simple as calling -data on
+  // a protobuf (GPBMessage) if you're using canonical protobuf.
+  // Using nanopb
+  return [_message dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (void)setMessage:(NSString *)message {
+    _message = message;
+}
+@end
 
 @interface FIRMessagingExtensionHelper ()
 @property(nonatomic, strong) void (^contentHandler)(UNNotificationContent *contentToDeliver);
@@ -32,6 +56,27 @@ static NSString *const kPayloadOptionsImageURLName = @"image";
 
 - (void)populateNotificationContent:(UNMutableNotificationContent *)content
                  withContentHandler:(void (^)(UNNotificationContent *_Nonnull))contentHandler {
+    
+  GDTCORTransport *transport =
+  [[GDTCORTransport alloc] initWithMappingID:@"137"
+                             transformers:nil
+                                   target:kGDTCORTargetCCT];
+  NSString *messageDelivery = @"FCM iOS Message Delivery";
+  FIRMessagingLogMessage *foo = [[FIRMessagingLogMessage alloc] init];
+  [foo setMessage:messageDelivery];
+  
+  // Do stuff setting the fields of someFoo.
+
+  GDTCOREvent *event = [transport eventForTransport];
+  event.dataObject = foo;
+
+  // Use this API for SDK service data events.
+  [transport sendDataEvent:event];
+
+  // Use this API for SDK telemetry events.
+  [transport sendTelemetryEvent:event];
+    
+    
   self.contentHandler = [contentHandler copy];
   self.bestAttemptContent = content;
 
