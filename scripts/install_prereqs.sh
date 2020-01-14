@@ -75,6 +75,9 @@ case "$PROJECT-$PLATFORM-$METHOD" in
     bundle exec pod install --project-directory=Example/Auth/AuthSample --repo-update
     ;;
 
+  Crashlytics-*)
+    ;;
+
   Database-*)
     ;;
 
@@ -123,6 +126,7 @@ case "$PROJECT-$PLATFORM-$METHOD" in
   Firestore-*-cmake)
     brew outdated cmake || brew upgrade cmake
     brew outdated go || brew upgrade go # Somehow the build for Abseil requires this.
+    brew install ccache
 
     # Install python packages required to generate proto sources
     pip install six
