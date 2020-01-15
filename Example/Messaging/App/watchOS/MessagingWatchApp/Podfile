@@ -1,0 +1,24 @@
+source 'https://cdn.cocoapods.org/'
+
+use_frameworks!
+
+target 'MessagingWatchApp WatchKit App' do
+  platform :watchos, '6.0'
+
+end
+
+target 'MessagingWatchApp WatchKit Extension' do
+  platform :watchos, '6.0'
+
+  pod 'FirebaseCore', :path => '../../../../../'
+  pod 'GoogleUtilities', :path => '../../../../../'
+  pod 'FirebaseMessaging', :path => '../../../../../'
+  pod 'FirebaseInstanceID', :path => '../../../../../'
+  pod 'FirebaseCoreDiagnosticsInterop', :path => '../../../../../'
+  pod 'FirebaseCoreDiagnostics', :path => '../../../../../'
+  pod 'GoogleDataTransportCCTSupport', :path => '../../../../../'
+  pod 'GoogleDataTransport', :path => '../../../../../'
+  pod 'FirebaseAnalyticsInterop', :path => '../../../../../'
+  pod 'FirebaseInstallations', :path => '../../../../../'
+
+end
