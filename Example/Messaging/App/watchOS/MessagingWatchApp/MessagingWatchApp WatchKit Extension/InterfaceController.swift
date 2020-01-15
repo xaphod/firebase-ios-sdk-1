@@ -14,28 +14,14 @@
 
 import WatchKit
 import Foundation
-import UserNotifications
 
-import FirebaseCore
-import FirebaseMessaging
 
-class InterfaceController: WKInterfaceController, MessagingDelegate {
+class InterfaceController: WKInterfaceController {
 
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
-        
-      FirebaseApp.configure()
-      Messaging.messaging().delegate = self
-      UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
-        
-      }
-      WKExtension.shared().registerForRemoteNotifications()
       
     }
-  
-  func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
-    print(fcmToken)
-  }
     
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
