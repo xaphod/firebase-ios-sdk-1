@@ -1592,6 +1592,29 @@ using firebase::firestore::util::TimerId;
   XCTAssertEqualObjects(steps, @"12");
 }
 
+- (void)testListenerCallbacksHappenOnMainThread {
+  // Verify that callbacks occur on the main thread if settings.dispatchQueue is not specified.
+  XCTestExpectation *invoked = [self expectationWithDescription:@"listener invoked"];
+
+  FIRDocumentReference *doc = [self documentRef];
+  [self writeDocumentRef:doc data:@{@"foo" : @"bar"}];
+
+  __block bool callbackThreadIsMainThread;
+  __block NSString *callbackThreadName;
+
+  listener = [doc addSnapshotListener:^(FIRDocumentSnapshot *, NSError *) {
+    callbackThreadIsMainThread = NSThread.isMainThread;
+    callbackThreadName = NSThread.currentThread.name;
+    [invoked fulfill];
+  }];
+
+  // Perform a write to `doc` which will trigger the listener callback.
+  [self writeDocumentRef:doc data:@{@"foo" : @"bar2"}];
+
+  [self awaitExpectation:invoked];
+  XCTAssertTrue(callbackThreadIsMainThread, @"The listener callback was expected to occur on the main thread, but instead it occurred on the thread %@", callbackThreadName);
+}
+
 - (void)testWaitForPendingWritesCompletes {
   FIRDocumentReference *doc = [self documentRef];
   FIRFirestore *firestore = doc.firestore;
